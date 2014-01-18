@@ -10,19 +10,20 @@ from synlink_loader import SynlinkLoader
 
 def print_synlinks_recursively(senses, link, lang='jpn', _depth=0):
     for sense in senses:
-        synlink_loader = SynlinkLoader()
-        synlinks = synlink_loader.load_multiple_records(sense, link)
+        with SynlinkLoader() as synlink_loader:
+            synlinks = synlink_loader.load_multiple_records(sense, link)
         if synlinks:
-            word_loader = WordLoader()
-            synset_loader = SynsetLoader()
-            print(''.join([' ' * 2 * _depth,
-                           word_loader.load_one_record(sense.wordid).lemma,
-                           ' ',
-                           synset_loader.load_one_record(sense.synset).name]))
+            with WordLoader() as word_loader:
+                with SynsetLoader() as synset_loader:
+                    print(''.join([
+                        ' ' * 2 * _depth,
+                        word_loader.load_one_record(sense.wordid).lemma,
+                        ' ',
+                        synset_loader.load_one_record(sense.synset).name]))
         _senses = []
-        sense_loader = SenseLoader()
         for synLink in synlinks:
-            sense = sense_loader.load_one_record(synLink.synset2, lang)
+            with SenseLoader() as sense_loader:
+                sense = sense_loader.load_one_record(synLink.synset2, lang)
             if sense:
                 _senses.append(sense)
 
@@ -31,11 +32,11 @@ def print_synlinks_recursively(senses, link, lang='jpn', _depth=0):
 
 if __name__ == '__main__':
     if len(sys.argv) >= 3:
-        word_loader = WordLoader()
-        words = word_loader.load_multiple_records(sys.argv[1])
+        with WordLoader() as word_loader:
+            words = word_loader.load_multiple_records(sys.argv[1])
         if words:
-            sense_loader = SenseLoader()
-            senses = sense_loader.load_multiple_records(words[0])
+            with SenseLoader() as sense_loader:
+                senses = sense_loader.load_multiple_records(words[0])
             link = len(sys.argv) >= 3 and sys.argv[2] or 'hypo'
             lang = len(sys.argv) == 4 and sys.argv[3] or 'jpn'
             print_synlinks_recursively(senses, link, lang)
