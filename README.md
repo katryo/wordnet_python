@@ -3,9 +3,11 @@ wordnet_python
 
 [日本語WordNet](http://nlpwww.nict.go.jp/wn-ja/)をPythonで扱うためのラッパー。
 
-[yanbeさんのコード](https://gist.github.com/yanbe/79057)をPython3.3でも動くようにして、ついでにオブジェクト指向的に読みやすくしたもの。
+[yanbeさんのコード](https://gist.github.com/yanbe/79057)をPython3.3で動くようにして、ついでにオブジェクト指向的に読みやすくしたもの。
 
 [yanbeさんのブログ記事](http://subtech.g.hatena.ne.jp/y_yanbe/20090314/p2)に詳細が載っている。
+
+Python3.3.1で動作確認。Python2.7.4では動かない。
 
 ## 使い方
 
