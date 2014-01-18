@@ -1,65 +1,27 @@
 # encoding: utf-8
 from __future__ import unicode_literals, print_function
 import sys
-import sqlite3
-from collections import namedtuple
-
-conn = sqlite3.connect("../wnjpn.db")
-Word = namedtuple('Word', 'wordid lang lemma pron pos')
-
-
-def getWords(lemma):
-    cur = conn.execute("select * from word where lemma=?", (lemma,))
-    return [Word(*row) for row in cur]
-
-
-def getWord(wordid):
-    cur = conn.execute("select * from word where wordid=?", (wordid,))
-    return Word(*cur.fetchone())
-
-
-Sense = namedtuple('Sense', 'synset wordid lang rank lexid freq src')
-
-
-def getSenses(word):
-    cur = conn.execute("select * from sense where wordid=?", (word.wordid,))
-    return [Sense(*row) for row in cur]
-
-
-def getSense(synset, lang='jpn'):
-    cur = conn.execute("select * from sense where synset=? and lang=?",
-                       (synset, lang))
-    row = cur.fetchone()
-    return row and Sense(*row) or None
-
-
-Synset = namedtuple('Synset', 'synset pos name src')
-
-
-def getSynset(synset):
-    cur = conn.execute("select * from synset where synset=?", (synset,))
-    return Synset(*cur.fetchone())
-
-SynLink = namedtuple('SynLink', 'synset1 synset2 link src')
-
-
-def getSynLinks(sense, link):
-    cur = conn.execute("select * from synlink where synset1=? and link=?",
-                       (sense.synset, link))
-    return [SynLink(*row) for row in cur]
+from sense_loader import SenseLoader
+from word_loader import WordLoader
+from synset_loader import SynsetLoader
+from synlink_loader import SynlinkLoader
 
 
 def getSynLinksRecursive(senses, link, lang='jpn', _depth=0):
     for sense in senses:
-        synLinks = getSynLinks(sense, link)
-        if synLinks:
+        synlink_loader = SynlinkLoader()
+        synlinks = synlink_loader.load_multiple_records(sense, link)
+        if synlinks:
+            word_loader = WordLoader()
+            synset_loader = SynsetLoader()
             print(''.join([' ' * 2 * _depth,
-                           getWord(sense.wordid).lemma,
+                           word_loader.load_one_record(sense.wordid).lemma,
                            ' ',
-                           getSynset(sense.synset).name]))
+                           synset_loader.load_one_record(sense.synset).name]))
         _senses = []
-        for synLink in synLinks:
-            sense = getSense(synLink.synset2, lang)
+        sense_loader = SenseLoader()
+        for synLink in synlinks:
+            sense = sense_loader.load_one_record(synLink.synset2, lang)
             if sense:
                 _senses.append(sense)
 
@@ -68,9 +30,11 @@ def getSynLinksRecursive(senses, link, lang='jpn', _depth=0):
 
 if __name__ == '__main__':
     if len(sys.argv) >= 3:
-        words = getWords(sys.argv[1])
+        word_loader = WordLoader()
+        words = word_loader.load_multiple_records(sys.argv[1])
         if words:
-            sense = getSenses(words[0])
+            sense_loader = SenseLoader()
+            sense = sense_loader.load_multiple_records(words[0])
             link = len(sys.argv) >= 3 and sys.argv[2] or 'hypo'
             lang = len(sys.argv) == 4 and sys.argv[3] or 'jpn'
             getSynLinksRecursive(sense, link, lang)
