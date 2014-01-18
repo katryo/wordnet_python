@@ -1,5 +1,6 @@
 # encoding: utf-8
-# Python3.3
+# For Python3.3 or higher.
+# You cannot use it with Python 2.7 or lower because of super() function.
 import sys
 from sense_loader import SenseLoader
 from word_loader import WordLoader
@@ -7,7 +8,7 @@ from synset_loader import SynsetLoader
 from synlink_loader import SynlinkLoader
 
 
-def getSynLinksRecursive(senses, link, lang='jpn', _depth=0):
+def print_synlinks_recursively(senses, link, lang='jpn', _depth=0):
     for sense in senses:
         synlink_loader = SynlinkLoader()
         synlinks = synlink_loader.load_multiple_records(sense, link)
@@ -25,7 +26,7 @@ def getSynLinksRecursive(senses, link, lang='jpn', _depth=0):
             if sense:
                 _senses.append(sense)
 
-        getSynLinksRecursive(_senses, link, lang, _depth + 1)
+        print_synlinks_recursively(_senses, link, lang, _depth + 1)
 
 
 if __name__ == '__main__':
@@ -37,7 +38,7 @@ if __name__ == '__main__':
             senses = sense_loader.load_multiple_records(words[0])
             link = len(sys.argv) >= 3 and sys.argv[2] or 'hypo'
             lang = len(sys.argv) == 4 and sys.argv[3] or 'jpn'
-            getSynLinksRecursive(senses, link, lang)
+            print_synlinks_recursively(senses, link, lang)
         else:
             print("(nothing found)", file=sys.stderr)
     else:
@@ -74,4 +75,7 @@ if __name__ == '__main__':
             lang (default: jpn)
               jpn - Japanese
               eng - English
+
+            例(example)
+              python wn.py 夢 hype
            """)
