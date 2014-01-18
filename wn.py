@@ -40,43 +40,46 @@ if __name__ == '__main__':
             link = len(sys.argv) >= 3 and sys.argv[2] or 'hypo'
             lang = len(sys.argv) == 4 and sys.argv[3] or 'jpn'
             print_synlinks_recursively(senses, link, lang)
-        else:
-            print("(nothing found)", file=sys.stderr)
-    else:
-        print("""usage: wn.py word link [lang]
-            word
-              word to investigate
+            sys.exit()
 
-            link
-              syns - Synonyms
-              hype - Hypernyms
-              inst - Instances
-              hypo - Hyponym
-              hasi - Has Instance
-              mero - Meronyms
-              mmem - Meronyms --- Member
-              msub - Meronyms --- Substance
-              mprt - Meronyms --- Part
-              holo - Holonyms
-              hmem - Holonyms --- Member
-              hsub - Holonyms --- Substance
-              hprt - Holonyms -- Part
-              attr - Attributes
-              sim - Similar to
-              entag - Entails
-              causg - Causes
-              dmncg - Domain --- Category
-              dmnug - Domain --- Usage
-              dmnrg - Domain --- Region
-              dmtcg - In Domain --- Category
-              dmtug - In Domain --- Usage
-              dmtrg - In Domain --- Region
-              antsg - Antonyms
+        print("(nothing found)", file=sys.stderr)
+        sys.exit()
 
-            lang (default: jpn)
-              jpn - Japanese
-              eng - English
+    # 引数の書き方を間違えたときなどにはhelpを表示
+    print("""usage: wn.py word link [lang]
+        word
+          word to investigate
 
-            例(example)
-              python wn.py 夢 hype
-           """)
+        link
+          syns - Synonyms
+          hype - Hypernyms
+          inst - Instances
+          hypo - Hyponym
+          hasi - Has Instance
+          mero - Meronyms
+          mmem - Meronyms --- Member
+          msub - Meronyms --- Substance
+          mprt - Meronyms --- Part
+          holo - Holonyms
+          hmem - Holonyms --- Member
+          hsub - Holonyms --- Substance
+          hprt - Holonyms -- Part
+          attr - Attributes
+          sim - Similar to
+          entag - Entails
+          causg - Causes
+          dmncg - Domain --- Category
+          dmnug - Domain --- Usage
+          dmnrg - Domain --- Region
+          dmtcg - In Domain --- Category
+          dmtug - In Domain --- Usage
+          dmtrg - In Domain --- Region
+          antsg - Antonyms
+
+        lang (default: jpn)
+          jpn - Japanese
+          eng - English
+
+        例(example)
+          python wn.py 夢 hype
+       """)
