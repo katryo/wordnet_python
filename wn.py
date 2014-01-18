@@ -1,5 +1,5 @@
 # encoding: utf-8
-from __future__ import unicode_literals, print_function
+# Python3.3
 import sys
 from sense_loader import SenseLoader
 from word_loader import WordLoader
@@ -34,10 +34,10 @@ if __name__ == '__main__':
         words = word_loader.load_multiple_records(sys.argv[1])
         if words:
             sense_loader = SenseLoader()
-            sense = sense_loader.load_multiple_records(words[0])
+            senses = sense_loader.load_multiple_records(words[0])
             link = len(sys.argv) >= 3 and sys.argv[2] or 'hypo'
             lang = len(sys.argv) == 4 and sys.argv[3] or 'jpn'
-            getSynLinksRecursive(sense, link, lang)
+            getSynLinksRecursive(senses, link, lang)
         else:
             print("(nothing found)", file=sys.stderr)
     else:
