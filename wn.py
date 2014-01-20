@@ -11,19 +11,19 @@ from synlink_loader import SynlinkLoader
 def print_synlinks_recursively(senses, link, lang='jpn', _depth=0):
     for sense in senses:
         with SynlinkLoader() as synlink_loader:
-            synlinks = synlink_loader.load_multiple_records(sense, link)
+            synlinks = synlink_loader.load_synlinks_with_sense_and_link(sense, link)
         if synlinks:
             with WordLoader() as word_loader:
                 with SynsetLoader() as synset_loader:
                     print(''.join([
                         ' ' * 2 * _depth,
-                        word_loader.load_one_record(sense.wordid).lemma,
+                        word_loader.load_word_with_wordid(sense.wordid).lemma,
                         ' ',
-                        synset_loader.load_one_record(sense.synset).name]))
+                        synset_loader.load_synset_with_synset(sense.synset).name]))
         _senses = []
         for synLink in synlinks:
             with SenseLoader() as sense_loader:
-                sense = sense_loader.load_one_record(synLink.synset2, lang)
+                sense = sense_loader.load_sense_with_synset(synLink.synset2, lang)
             if sense:
                 _senses.append(sense)
 
@@ -33,12 +33,21 @@ def print_synlinks_recursively(senses, link, lang='jpn', _depth=0):
 if __name__ == '__main__':
     if len(sys.argv) >= 3:
         with WordLoader() as word_loader:
-            words = word_loader.load_multiple_records(sys.argv[1])
+            words = word_loader.load_words_with_lemma(sys.argv[1])
         if words:
             with SenseLoader() as sense_loader:
-                senses = sense_loader.load_multiple_records(words[0])
-            link = len(sys.argv) >= 3 and sys.argv[2] or 'hypo'
-            lang = len(sys.argv) == 4 and sys.argv[3] or 'jpn'
+                senses = sense_loader.load_senses_with_synset(words[0])
+
+            if len(sys.argv) >= 3:
+                link = sys.argv[2]
+            else:
+                link = 'hypo'
+
+            if len(sys.argv) == 4:
+                lang = sys.argv[3]
+            else:
+                lang = 'jpn'
+
             print_synlinks_recursively(senses, link, lang)
             sys.exit()
 

@@ -7,6 +7,6 @@ class SynsetLoader(AbstractRecordLoader):
         super().__init__()
         self.synset = namedtuple('Synset', 'synset pos name src')
 
-    def load_one_record(self, synset):
+    def load_synset_with_synset(self, synset):
         cur = self.conn.execute("select * from synset where synset=?", (synset,))
         return self.synset(*cur.fetchone())
